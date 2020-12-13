@@ -9,6 +9,7 @@ from typer import Typer
 
 app = Typer()
 
+from fid_score import fid_score
 from inception_score import inception_score
 from model import Generator, Discriminator
 
@@ -82,12 +83,15 @@ def train(
             preds = generator(test_set)
             fakes = preds.detach().cpu().view(-1, 1, 28, 28)
             resized_fakes = F.interpolate(fakes.repeat(1, 3, 1, 1), size=(299, 299))
-            fakes_score = inception_score(resized_fakes, batch_size)
+            fakes_inception_score = inception_score(resized_fakes, batch_size)
 
             reals, _ = next(iter(train_loader))
             reals = reals.to(device).view(-1, 1, 28, 28)
             resized_reals = F.interpolate(reals.repeat(1, 3, 1, 1), size=(299, 299))
-            reals_score = inception_score(resized_reals, batch_size)
+            reals_inception_score = inception_score(resized_reals, batch_size)
+            fid_score_result = fid_score(
+                resized_reals, resized_fakes, batch_size, device
+            )
 
             _ = save_image(
                 fakes,
@@ -97,8 +101,9 @@ def train(
                 pad_value=1,
             )
 
-            print(f"Generated Images Inception Score: {fakes_score}")
-            print(f"Real Images Inception Score: {reals_score}")
+            print(f"Generated Images Inception Score: {fakes_inception_score}")
+            print(f"Real Images Inception Score: {reals_inception_score}")
+            print(f"FID Score: {fid_score_result}")
 
 
 @app.command()

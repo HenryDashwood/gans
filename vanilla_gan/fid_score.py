@@ -1,5 +1,8 @@
 from math import ceil
 
+import numpy as np
+from scipy import linalg
+import torch
 from torch import nn
 from torch.autograd import Variable
 from torch.nn import functional as F
@@ -10,7 +13,7 @@ class PartialInceptionNetwork(nn.Module):
     def __init__(self):
         super(PartialInceptionNetwork, self).__init__()
         self.inception_network = inception_v3(pretrained=True)
-        self.inception_network.Mixed_7c.register_foward_hook(self.output_hook)
+        self.inception_network.Mixed_7c.register_forward_hook(self.output_hook)
 
     def output_hook(self, module, input, output):
         self.mixed_7c_output = output
@@ -42,3 +45,20 @@ def fid_score(real_images, gen_images, batch_size, device):
         features_gen = net(batch_gen)
         real_activations.append(features_real)
         gen_activations.append(features_gen)
+    features_real = torch.cat(real_activations, 0)
+    features_gen = torch.cat(gen_activations, 0)
+    xr = features_real.detach().cpu().numpy()
+    xg = features_gen.detach().cpu().numpy()
+    u1 = np.mean(xr, axis=0)
+    u2 = np.mean(xg, axis=0)
+    s1 = np.cov(xr, rowvar=False)
+    s2 = np.cov(xg, rowvar=False)
+    diff = u1 - u2
+    diff_squared = diff.dot(diff)
+    prod = s1.dot(s2)
+    sqrt_prod, _ = linalg.sqrtm(prod, disp=False)
+    if np.iscomplexobj(sqrt_prod):
+        sqrt_prod = sqrt_prod.real
+    prod_tr = np.trace(sqrt_prod)
+    final_score = diff_squared + np.trace(s1) + np.trace(s2) - 2 * prod_tr
+    return final_score
