@@ -8,13 +8,13 @@ class Generator(nn.Module):
         self.fcn = nn.Sequential(
             nn.Linear(in_features=self.noise_dim, out_features=240, bias=True),
             nn.ReLU(),
-            nn.Dropout(0.5),
+            nn.Dropout(),
             nn.Linear(in_features=240, out_features=240, bias=True),
             nn.ReLU(),
-            nn.Dropout(0.5),
+            nn.Dropout(),
             nn.Linear(in_features=240, out_features=240, bias=True),
             nn.ReLU(),
-            nn.Dropout(0.5),
+            nn.Dropout(),
             nn.Linear(in_features=240, out_features=784, bias=True),
             nn.Sigmoid(),
         )
@@ -48,10 +48,10 @@ class Discriminator(nn.Module):
             nn.Linear(in_features=48, out_features=240, bias=True),
             Maxout(5),
             nn.Linear(in_features=48, out_features=1, bias=True),
+            nn.Sigmoid(),
         )
 
     def forward(self, batch):
         inputs = batch.view(batch.size(0), -1)
         outputs = self.fcn(inputs)
-        outputs = outputs.mean(0)
-        return outputs.view(1)
+        return outputs

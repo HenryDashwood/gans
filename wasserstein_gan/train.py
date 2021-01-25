@@ -1,9 +1,5 @@
-import os
-
-import numpy as np
 import torch
 from fastprogress import progress_bar
-from matplotlib import pyplot as plt
 from torch import nn
 from torch.utils.tensorboard import SummaryWriter
 import torchvision
@@ -32,21 +28,6 @@ def create_dataloader(batch_size, train, shuffle, num_workers=0):
         data, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers
     )
     return data_loader
-
-
-def visualiseGAN(images, labels, epoch):
-    if not os.path.exists("./visuals"):
-        os.mkdir("./visuals")
-    fig, axes = plt.subplots(2, 5, figsize=(20, 18))
-    fig.suptitle(f"Epoch {epoch}")
-    for row, axe in enumerate(axes):
-        for col, cell in enumerate(axe):
-            cell.imshow(images[row * 5 + col], cmap="gray")
-            cell.axis("off")
-    plt.axis("off")
-    plt.tight_layout()
-    fig.savefig(f"./visuals/{epoch}.jpg")
-    plt.close()
 
 
 def train(
@@ -103,7 +84,7 @@ def train(
                 tb_writer.add_scalar(
                     "discriminator/gradients",
                     discriminator.fcn[-1].weight.grad.abs().mean().item(),
-                    int(f"{epoch}{k}"),
+                    int(f"{epoch} {k}"),
                 )
                 tb_writer.add_graph(discriminator, real_images)
                 tb_writer.add_graph(discriminator, fake_images)
@@ -134,7 +115,6 @@ def train(
 
         if epoch % 10 == 0:
             generated = generator(test_set).detach().cpu().view(-1, 1, 28, 28)
-            # visualiseGAN(generated, test_y, epoch)
             grid = torchvision.utils.make_grid(
                 generated, nrow=5, padding=10, pad_value=1
             )
