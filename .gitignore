@@ -1,5 +1,6 @@
 **/__pycache__
 **/runs
+**/.DS_Store
 
 **/*.jpg
 **/*.pytorch
