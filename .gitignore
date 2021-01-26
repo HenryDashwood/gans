@@ -2,5 +2,6 @@
 **/runs
 
 **/*.jpg
+**/*.pytorch
 
 !.gitignore
