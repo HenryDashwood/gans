@@ -1,0 +1,5 @@
+fastprogress
+scikit-image
+torch
+torchvision
+wget

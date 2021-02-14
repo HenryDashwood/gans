@@ -169,7 +169,8 @@ def main(
     generator_optimiser = torch.optim.Adam(
         generator.parameters(), lr=0.0002, betas=(0.5, 0.999)
     )
-
+    if not os.path.exists(f"./{data_dir}"):
+        os.mkdir(f"./{data_dir}")
     train_loader = create_dataloader(data_dir, batch_size=batch_size)
 
     if os.path.exists("./sec_4_lec_2_netG.pytorch"):
