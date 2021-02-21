@@ -1,6 +1,4 @@
-# gans
-Generative Adversarial Networks
-
+# Generative Adversarial Networks
 
 ### Running Tensorboard on a remote machine
 
