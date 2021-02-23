@@ -2,4 +2,5 @@ fastprogress
 scikit-image
 torch
 torchvision
+typer
 wget

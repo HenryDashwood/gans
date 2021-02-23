@@ -135,9 +135,12 @@ def main(
     generator = Generator(
         nz=nz, ngf=ngf, nc=nc, image_size=image_size, max_levels=max_levels
     )
+    generator = generator.to(device)
+
     discriminator = Discriminator(
         ndf=ndf, nc=nc, image_size=image_size, max_levels=max_levels
     )
+    discriminator = discriminator.to(device)
 
     optimiser_disc = torch.optim.RMSprop(discriminator.parameters(), lr=0.0001)
     optimiser_gen = torch.optim.RMSprop(generator.parameters(), lr=0.0001)
