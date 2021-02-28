@@ -1,5 +1,14 @@
 # Generative Adversarial Networks
 
+### Getting Datasets
+
+##### Building Facades
+
+```shell
+wget https://people.eecs.berkeley.edu/~tinghuiz/projects/pix2pix/datasets/facades.tar.gz
+tar -xf facades.tar.gz
+```
+
 ### Running Tensorboard on a remote machine
 
 On your local machine, run:
