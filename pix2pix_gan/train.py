@@ -39,16 +39,31 @@ class FacadesDataset(object):
 def train(
     generator,
     discriminator,
-    generator_optimiser,
-    discriminator_optimiser,
     num_epochs: int,
     batch_size: int,
+    lr: int,
     K: int,
     image_width: int,
     image_height: int,
     device: torch.device,
 ):
     tb_writer = SummaryWriter()
+
+    discriminator_optimiser = torch.optim.Adam(
+        discriminator.parameters(), lr=lr, betas=(0.5, 0.9)
+    )
+    generator_optimiser = torch.optim.Adam(
+        generator.parameters(), lr=lr, betas=(0.5, 0.9)
+    )
+
+    if os.path.exists("checkpoints/pix2pix-optim-d.pytorch"):
+        discriminator_optimiser.load_state_dict(
+            torch.load("checkpoints/pix2pix-optim-d.pytorch")
+        )
+    if os.path.exists("checkpoints/pix2pix-optim-g.pytorch"):
+        generator_optimiser.load_state_dict(
+            torch.load("checkpoints/pix2pix-optim-g.pytorch")
+        )
 
     Lambda = 100
     bce_loss = nn.BCELoss()
@@ -143,13 +158,6 @@ def main(
     discriminator = Discriminator().to(device)
     generator = Generator().to(device)
 
-    optimizerD = torch.optim.Adam(discriminator.parameters(), lr=lr, betas=(0.5, 0.9))
-    optimizerG = torch.optim.Adam(generator.parameters(), lr=lr, betas=(0.5, 0.9))
-
-    if os.path.exists("checkpoints/pix2pix-optim-d.pytorch"):
-        optimizerD.load_state_dict(torch.load("checkpoints/pix2pix-optim-d.pytorch"))
-    if os.path.exists("checkpoints/pix2pix-optim-g.pytorch"):
-        optimizerG.load_state_dict(torch.load("checkpoints/pix2pix-optim-g.pytorch"))
     if os.path.exists("checkpoints/pix2pix-network-d.pytorch"):
         discriminator.load_state_dict(
             torch.load("checkpoints/pix2pix-network-d.pytorch")
@@ -160,10 +168,9 @@ def main(
     train(
         generator,
         discriminator,
-        optimizerG,
-        optimizerD,
         num_epochs,
         batch_size,
+        lr,
         K,
         image_width,
         image_height,
