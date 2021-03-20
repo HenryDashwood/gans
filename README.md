@@ -1,6 +1,6 @@
 # Generative Adversarial Networks
 
-### Getting Datasets
+### Getting Datasets
 
 ##### Building Facades
 
